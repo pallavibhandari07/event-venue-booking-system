@@ -1,0 +1,188 @@
+<%- include('../partials/header') %>
+
+<div class="container">
+  <!-- Alerts -->
+  <%- include('../partials/alerts') %>
+
+  <!-- Admin Header -->
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+    <div>
+      <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem;">
+        <span class="role-tag admin">Admin Console</span>
+      </div>
+      <h1>Manage Booking Requests</h1>
+      <p>Approve or reject organizer requests, track confirmed events, and update operational statuses.</p>
+    </div>
+
+    <a href="/dashboard" class="btn btn-secondary btn-sm">
+      ← Back to Analytics Dashboard
+    </a>
+  </div>
+
+  <!-- Status Filter Toolbar -->
+  <div style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+    <a href="/admin/bookings?status=all" class="btn btn-sm <%= currentStatus === 'all' ? 'btn-primary' : 'btn-secondary' %>">
+      All Requests (<%= bookings.length %>)
+    </a>
+    <a href="/admin/bookings?status=pending" class="btn btn-sm <%= currentStatus === 'pending' ? 'btn-primary' : 'btn-secondary' %>">
+      ⏳ Pending Review
+    </a>
+    <a href="/admin/bookings?status=approved" class="btn btn-sm <%= currentStatus === 'approved' ? 'btn-primary' : 'btn-secondary' %>">
+      ✓ Approved & Scheduled
+    </a>
+    <a href="/admin/bookings?status=completed" class="btn btn-sm <%= currentStatus === 'completed' ? 'btn-primary' : 'btn-secondary' %>">
+      🏆 Completed
+    </a>
+    <a href="/admin/bookings?status=rejected" class="btn btn-sm <%= currentStatus === 'rejected' ? 'btn-primary' : 'btn-secondary' %>">
+      ✕ Rejected
+    </a>
+    <a href="/admin/bookings?status=cancelled" class="btn btn-sm <%= currentStatus === 'cancelled' ? 'btn-primary' : 'btn-secondary' %>">
+      🚫 Cancelled
+    </a>
+  </div>
+
+  <!-- Bookings Management Table -->
+  <div class="card">
+    <% if (bookings && bookings.length > 0) { %>
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Event Title</th>
+              <th>Venue & Timing</th>
+              <th>Organiser Contact</th>
+              <th>Attendees</th>
+              <th>Revenue</th>
+              <th>Status</th>
+              <th>Management Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% bookings.forEach(b => { %>
+              <tr>
+                <td>
+                  <div style="font-weight: 600; color: #fff;"><%= b.eventName %></div>
+                  <div style="font-size: 0.8rem; color: var(--text-dim);">
+                    <%= b.eventDescription ? b.eventDescription.substring(0, 45) + '...' : 'No notes' %>
+                  </div>
+                </td>
+                <td>
+                  <div style="font-weight: 600; color: #38bdf8;">
+                    🏛️ <%= b.venue ? b.venue.name : 'Unknown Venue' %>
+                  </div>
+                  <div style="font-size: 0.8rem; color: #fff;">📅 <%= b.date %></div>
+                  <div style="font-size: 0.775rem; color: var(--accent-cyan);">
+                    ⏱️ <%= b.startTime %> - <%= b.endTime %> (<%= b.durationHours %> hrs)
+                  </div>
+                </td>
+                <td>
+                  <% if (b.organizer) { %>
+                    <div style="font-weight: 500;"><%= b.organizer.name %></div>
+                    <div style="font-size: 0.775rem; color: var(--text-dim);"><%= b.organizer.organization %></div>
+                    <div style="font-size: 0.75rem; color: var(--text-dim);">✉️ <%= b.organizer.email %></div>
+                  <% } else { %>
+                    <span style="color: var(--text-dim);">Unknown</span>
+                  <% } %>
+                </td>
+                <td><%= b.expectedAttendees %></td>
+                <td style="color: #34d399; font-weight: 600;">₹<%= b.totalCost.toLocaleString('en-IN') %></td>
+                <td>
+                  <span class="badge badge-status-<%= b.status %>"><%= b.status %></span>
+                  <% if (b.status === 'rejected' && b.rejectionReason) { %>
+                    <div style="font-size: 0.75rem; color: #fb7185; margin-top: 0.25rem;">
+                      Reason: <%= b.rejectionReason %>
+                    </div>
+                  <% } %>
+                </td>
+                <td>
+                  <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
+                    <% if (b.status === 'pending') { %>
+                      <form action="/admin/bookings/<%= b._id %>/status" method="POST" style="margin: 0;">
+                        <input type="hidden" name="status" value="approved">
+                        <button type="submit" class="btn btn-emerald btn-sm" style="padding: 0.3rem 0.6rem; font-size: 0.75rem;">
+                          ✓ Approve
+                        </button>
+                      </form>
+
+                      <button 
+                        type="button" 
+                        class="btn btn-danger btn-sm btn-trigger-reject" 
+                        data-id="<%= b._id %>"
+                        data-eventname="<%= b.eventName %>"
+                        style="padding: 0.3rem 0.6rem; font-size: 0.75rem;"
+                      >
+                        ✕ Reject
+                      </button>
+                    <% } else if (b.status === 'approved') { %>
+                      <form action="/admin/bookings/<%= b._id %>/status" method="POST" style="margin: 0;">
+                        <input type="hidden" name="status" value="completed">
+                        <button type="submit" class="btn btn-secondary btn-sm" style="padding: 0.3rem 0.6rem; font-size: 0.75rem; border-color: rgba(99, 102, 241, 0.4); color: #a5b4fc;">
+                          🏆 Complete
+                        </button>
+                      </form>
+
+                      <form action="/admin/bookings/<%= b._id %>/status" method="POST" onsubmit="return confirm('Cancel this approved event?');" style="margin: 0;">
+                        <input type="hidden" name="status" value="cancelled">
+                        <button type="submit" class="btn btn-danger btn-sm" style="padding: 0.3rem 0.6rem; font-size: 0.75rem;">
+                          🚫 Cancel
+                        </button>
+                      </form>
+                    <% } else { %>
+                      <span style="font-size: 0.8rem; color: var(--text-dim);">No actions</span>
+                    <% } %>
+                  </div>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    <% } else { %>
+      <div style="text-align: center; padding: 3rem 1rem; color: var(--text-dim);">
+        <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">📂</div>
+        <p>No booking records found under this filter.</p>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<!-- Admin Rejection Modal -->
+<div class="modal-backdrop" id="rejectModal" style="display: none;" role="dialog">
+  <div class="modal-content" style="max-width: 480px;">
+    <div class="modal-header">
+      <h3>Reject Booking Request</h3>
+      <button type="button" class="btn-close" id="btnCloseRejectModal">&times;</button>
+    </div>
+
+    <p style="margin-bottom: 1rem; font-size: 0.9rem;">
+      Rejecting event: <strong id="rejectEventName" style="color: #fff;"></strong>
+    </p>
+
+    <form id="rejectForm" method="POST">
+      <input type="hidden" name="status" value="rejected">
+
+      <div class="form-group" style="margin-bottom: 1.25rem;">
+        <label for="rejectionReason" class="form-label">Reason for Rejection *</label>
+        <textarea 
+          id="rejectionReason" 
+          name="rejectionReason" 
+          class="form-control" 
+          placeholder="e.g. Venue booked for university convocation rehearsal; please select alternate slot."
+          rows="3" 
+          required
+        ></textarea>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+        <button type="button" class="btn btn-secondary" onclick="document.getElementById('rejectModal').style.display='none'">
+          Cancel
+        </button>
+        <button type="submit" class="btn btn-danger">
+          Confirm Rejection
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

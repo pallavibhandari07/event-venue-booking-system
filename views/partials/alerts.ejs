@@ -1,0 +1,17 @@
+<% if (typeof message !== 'undefined' && message) { %>
+  <div class="alert-container">
+    <div class="alert alert-success" id="alertSuccess">
+      <span>✓ <%= message %></span>
+      <button type="button" class="btn-close" onclick="this.parentElement.remove()" aria-label="Close alert">&times;</button>
+    </div>
+  </div>
+<% } %>
+
+<% if (typeof error !== 'undefined' && error) { %>
+  <div class="alert-container">
+    <div class="alert alert-danger" id="alertError">
+      <span>✕ <%= error %></span>
+      <button type="button" class="btn-close" onclick="this.parentElement.remove()" aria-label="Close alert">&times;</button>
+    </div>
+  </div>
+<% } %>

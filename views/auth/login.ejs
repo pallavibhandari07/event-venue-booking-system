@@ -1,0 +1,70 @@
+<%- include('../partials/header') %>
+
+<div class="auth-wrapper">
+  <div class="auth-card">
+    <div style="text-align: center; margin-bottom: 1.5rem;">
+      <span style="font-size: 2.25rem;">🏛️</span>
+      <h2 style="margin-top: 0.5rem; margin-bottom: 0.35rem;">Welcome Back</h2>
+      <p>Sign in to manage venues or schedule campus events</p>
+    </div>
+
+    <!-- Alerts -->
+    <%- include('../partials/alerts') %>
+
+    <!-- 1-Click Quick Evaluator Login -->
+    <div class="demo-box">
+      <span style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: #a5b4fc; letter-spacing: 0.5px;">
+        ⚡ Instant Evaluator Demo Logins
+      </span>
+      <div class="demo-buttons">
+        <a href="/demo-login/admin" class="btn btn-secondary btn-sm" style="border-color: rgba(244, 63, 94, 0.4); color: #fb7185;">
+          🛡️ Admin Login
+        </a>
+        <a href="/demo-login/organizer" class="btn btn-secondary btn-sm" style="border-color: rgba(99, 102, 241, 0.4); color: #a5b4fc;">
+          📅 Organiser Login
+        </a>
+      </div>
+    </div>
+
+    <form action="/login" method="POST">
+      <div style="margin-bottom: 1.25rem;">
+        <label for="email" style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.4rem;">
+          Email Address
+        </label>
+        <input 
+          type="email" 
+          id="email" 
+          name="email" 
+          class="input-control" 
+          placeholder="e.g. organizer@campus.edu" 
+          required 
+          autofocus
+        >
+      </div>
+
+      <div style="margin-bottom: 1.5rem;">
+        <label for="password" style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.4rem;">
+          Password
+        </label>
+        <input 
+          type="password" 
+          id="password" 
+          name="password" 
+          class="input-control" 
+          placeholder="••••••••" 
+          required
+        >
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.75rem;">
+        Sign In
+      </button>
+    </form>
+
+    <div style="text-align: center; margin-top: 1.5rem; font-size: 0.85rem; color: var(--text-dim);">
+      Don't have an account? <a href="/register">Register here</a>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

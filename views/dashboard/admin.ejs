@@ -1,0 +1,329 @@
+<%- include('../partials/header') %>
+
+<div class="container">
+  <!-- Alerts -->
+  <%- include('../partials/alerts') %>
+
+  <!-- Admin Header -->
+  <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem;">
+    <div>
+      <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.35rem;">
+        <span class="role-tag admin">Administrator</span>
+        <span style="color: var(--text-dim); font-size: 0.85rem;">Campus Facility Command Center</span>
+      </div>
+      <h1>Venue Operations & Analytics</h1>
+      <p>Real-time oversight on campus venue bookings, utilization rates, and revenue.</p>
+    </div>
+
+    <div style="display: flex; gap: 0.75rem;">
+      <a href="/admin/bookings?status=pending" class="btn btn-secondary btn-sm">
+        Pending Approvals (<%= pendingBookings.length %>)
+      </a>
+      <a href="/venues/new" class="btn btn-primary btn-sm">
+        + Create Venue
+      </a>
+    </div>
+  </div>
+
+  <!-- Key Metrics Row -->
+  <section class="stats-grid">
+    <div class="card">
+      <div class="stat-header">
+        <span class="stat-label">Total Revenue</span>
+        <div class="stat-icon">💰</div>
+      </div>
+      <div class="stat-value" style="color: #34d399;">₹<%= totalRevenue.toLocaleString('en-IN') %></div>
+      <div class="stat-subtitle">From approved & completed events</div>
+    </div>
+
+    <div class="card">
+      <div class="stat-header">
+        <span class="stat-label">Today's Revenue</span>
+        <div class="stat-icon">📈</div>
+      </div>
+      <div class="stat-value" style="color: #38bdf8;">₹<%= todayRevenue.toLocaleString('en-IN') %></div>
+      <div class="stat-subtitle">Scheduled for <%= todayStr %></div>
+    </div>
+
+    <div class="card">
+      <div class="stat-header">
+        <span class="stat-label">Today's Events</span>
+        <div class="stat-icon">🎯</div>
+      </div>
+      <div class="stat-value" style="color: #a5b4fc;"><%= todayEvents.length %></div>
+      <div class="stat-subtitle">Live / scheduled today</div>
+    </div>
+
+    <div class="card">
+      <div class="stat-header">
+        <span class="stat-label">Pending Requests</span>
+        <div class="stat-icon">⏳</div>
+      </div>
+      <div class="stat-value" style="color: #fbbf24;"><%= pendingBookings.length %></div>
+      <div class="stat-subtitle">Requires administrator review</div>
+    </div>
+  </section>
+
+  <!-- 2-Column Section: Today's Events & Pending Approvals -->
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem;">
+    
+    <!-- Today's Events -->
+    <div class="card">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
+        <div>
+          <h3>📅 Today's Events (<%= todayStr %>)</h3>
+          <p style="font-size: 0.85rem;">Active and approved sessions happening today</p>
+        </div>
+        <span class="badge badge-status-approved"><%= todayEvents.length %> Active</span>
+      </div>
+
+      <% if (todayEvents && todayEvents.length > 0) { %>
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+          <% todayEvents.forEach(evt => { %>
+            <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1rem; display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div style="font-size: 0.8rem; color: var(--accent-cyan); font-weight: 600; margin-bottom: 0.2rem;">
+                  ⏱️ <%= evt.startTime %> - <%= evt.endTime %> (<%= evt.durationHours %> hrs)
+                </div>
+                <h4 style="font-size: 1.05rem; color: #fff; margin-bottom: 0.2rem;"><%= evt.eventName %></h4>
+                <div style="font-size: 0.85rem; color: var(--text-dim);">
+                  🏛️ <%= evt.venue.name %> &bull; 👤 <%= evt.organizer.name %> (<%= evt.organizer.organization %>)
+                </div>
+              </div>
+
+              <div style="text-align: right;">
+                <span class="badge badge-status-approved">Approved</span>
+                <div style="font-size: 0.85rem; color: var(--text-main); font-weight: 600; margin-top: 0.4rem;">
+                  ₹<%= evt.totalCost.toLocaleString('en-IN') %>
+                </div>
+              </div>
+            </div>
+          <% }); %>
+        </div>
+      <% } else { %>
+        <div style="text-align: center; padding: 2.5rem 1rem; color: var(--text-dim);">
+          <div style="font-size: 2rem; margin-bottom: 0.5rem;">🏖️</div>
+          <p>No events scheduled for today.</p>
+        </div>
+      <% } %>
+    </div>
+
+    <!-- Pending Approvals Quick Queue -->
+    <div class="card">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
+        <div>
+          <h3>⏳ Awaiting Approval</h3>
+          <p style="font-size: 0.85rem;">Booking requests requiring admin action</p>
+        </div>
+        <a href="/admin/bookings" class="btn btn-secondary btn-sm" style="font-size: 0.75rem;">View All</a>
+      </div>
+
+      <% if (pendingBookings && pendingBookings.length > 0) { %>
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+          <% pendingBookings.slice(0, 4).forEach(reqItem => { %>
+            <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1rem;">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+                <div>
+                  <h4 style="font-size: 1rem; color: #fff;"><%= reqItem.eventName %></h4>
+                  <div style="font-size: 0.825rem; color: var(--text-dim);">
+                    📅 <%= reqItem.date %> &bull; ⏱️ <%= reqItem.startTime %> - <%= reqItem.endTime %>
+                  </div>
+                  <div style="font-size: 0.825rem; color: var(--accent-primary); margin-top: 0.2rem;">
+                    🏛️ <%= reqItem.venue ? reqItem.venue.name : 'Unknown Venue' %> &bull; <%= reqItem.expectedAttendees %> attendees
+                  </div>
+                </div>
+
+                <span class="badge badge-status-pending">Pending</span>
+              </div>
+
+              <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 0.75rem; border-top: 1px solid rgba(255, 255, 255, 0.05); margin-top: 0.5rem;">
+                <span style="font-size: 0.85rem; color: #34d399; font-weight: 600;">Est. Cost: ₹<%= reqItem.totalCost.toLocaleString('en-IN') %></span>
+                
+                <div style="display: flex; gap: 0.5rem;">
+                  <form action="/admin/bookings/<%= reqItem._id %>/status" method="POST" style="margin: 0;">
+                    <input type="hidden" name="status" value="approved">
+                    <button type="submit" class="btn btn-emerald btn-sm" style="padding: 0.25rem 0.6rem; font-size: 0.75rem;">
+                      ✓ Approve
+                    </button>
+                  </form>
+
+                  <button 
+                    type="button" 
+                    class="btn btn-danger btn-sm btn-trigger-reject" 
+                    data-id="<%= reqItem._id %>"
+                    data-eventname="<%= reqItem.eventName %>"
+                    style="padding: 0.25rem 0.6rem; font-size: 0.75rem;"
+                  >
+                    ✕ Reject
+                  </button>
+                </div>
+              </div>
+            </div>
+          <% }); %>
+        </div>
+      <% } else { %>
+        <div style="text-align: center; padding: 2.5rem 1rem; color: var(--text-dim);">
+          <div style="font-size: 2rem; margin-bottom: 0.5rem;">✨</div>
+          <p>Inbox zero! No pending booking requests.</p>
+        </div>
+      <% } %>
+    </div>
+  </div>
+
+  <!-- Venue-Wise Utilisation & Revenue Breakdown -->
+  <section class="card" style="margin-bottom: 2.5rem;">
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <h3>📊 Venue-Wise Utilisation & Revenue</h3>
+        <p>Breakdown of booked hours, monthly utilisation rate (based on 14 daily operating hours: 08:00 - 22:00), and total revenue</p>
+      </div>
+      <span class="badge badge-status-completed"><%= venueStats.length %> Venues Monitored</span>
+    </div>
+
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Venue Name</th>
+            <th>Location</th>
+            <th>Capacity</th>
+            <th>Hourly Rate</th>
+            <th>Total Bookings</th>
+            <th>Hours Booked</th>
+            <th style="width: 180px;">Utilisation</th>
+            <th>Total Revenue</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% venueStats.forEach(stat => { %>
+            <tr>
+              <td>
+                <a href="/venues/<%= stat.venue._id %>" style="font-weight: 600; color: #fff;">
+                  <%= stat.venue.name %>
+                </a>
+              </td>
+              <td><%= stat.venue.location %></td>
+              <td><%= stat.venue.capacity %> seats</td>
+              <td>₹<%= stat.venue.hourlyRate.toLocaleString('en-IN') %>/hr</td>
+              <td><strong><%= stat.bookingsCount %></strong> events</td>
+              <td><%= stat.totalHours %> hrs</td>
+              <td>
+                <div style="display: flex; align-items: center; gap: 0.6rem;">
+                  <div class="progress-bar-bg" style="flex-grow: 1;">
+                    <div class="progress-fill <%= stat.utilisationPercent > 60 ? 'emerald' : (stat.utilisationPercent > 30 ? 'cyan' : 'amber') %>" style="width: <%= stat.utilisationPercent %>%;"></div>
+                  </div>
+                  <span style="font-size: 0.75rem; font-weight: 600; min-width: 32px;"><%= stat.utilisationPercent %>%</span>
+                </div>
+              </td>
+              <td style="color: #34d399; font-weight: 600;">₹<%= stat.revenue.toLocaleString('en-IN') %></td>
+              <td>
+                <a href="/venues/<%= stat.venue._id %>" class="btn btn-secondary btn-sm" style="font-size: 0.75rem; padding: 0.2rem 0.5rem;">
+                  Inspect
+                </a>
+              </td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Upcoming Events Schedule -->
+  <section class="card">
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
+      <div>
+        <h3>🗓️ Upcoming Events Schedule (Next 30 Days)</h3>
+        <p>Forward schedule of approved and pending events across campus halls</p>
+      </div>
+      <a href="/admin/bookings" class="btn btn-secondary btn-sm">Full Schedule</a>
+    </div>
+
+    <% if (upcomingEvents && upcomingEvents.length > 0) { %>
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Date & Time</th>
+              <th>Event Title</th>
+              <th>Venue</th>
+              <th>Organiser</th>
+              <th>Attendees</th>
+              <th>Status</th>
+              <th>Revenue</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% upcomingEvents.forEach(evt => { %>
+              <tr>
+                <td>
+                  <div style="font-weight: 600; color: #fff;">📅 <%= evt.date %></div>
+                  <div style="font-size: 0.8rem; color: var(--text-dim);">⏱️ <%= evt.startTime %> - <%= evt.endTime %></div>
+                </td>
+                <td>
+                  <div style="font-weight: 600;"><%= evt.eventName %></div>
+                  <div style="font-size: 0.8rem; color: var(--text-dim);"><%= evt.eventDescription ? evt.eventDescription.substring(0, 45) + '...' : '' %></div>
+                </td>
+                <td><%= evt.venue ? evt.venue.name : 'Unknown' %></td>
+                <td>
+                  <div><%= evt.organizer ? evt.organizer.name : 'Unknown' %></div>
+                  <div style="font-size: 0.75rem; color: var(--text-dim);"><%= evt.organizer ? evt.organizer.organization : '' %></div>
+                </td>
+                <td><%= evt.expectedAttendees %></td>
+                <td>
+                  <span class="badge badge-status-<%= evt.status %>"><%= evt.status %></span>
+                </td>
+                <td style="color: #34d399; font-weight: 600;">₹<%= evt.totalCost.toLocaleString('en-IN') %></td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    <% } else { %>
+      <div style="text-align: center; padding: 2rem; color: var(--text-dim);">
+        <p>No upcoming events booked in the next 30 days.</p>
+      </div>
+    <% } %>
+  </section>
+</div>
+
+<!-- Admin Rejection Modal -->
+<div class="modal-backdrop" id="rejectModal" style="display: none;" role="dialog">
+  <div class="modal-content" style="max-width: 480px;">
+    <div class="modal-header">
+      <h3>Reject Booking Request</h3>
+      <button type="button" class="btn-close" id="btnCloseRejectModal">&times;</button>
+    </div>
+
+    <p style="margin-bottom: 1rem; font-size: 0.9rem;">
+      Rejecting event: <strong id="rejectEventName" style="color: #fff;"></strong>
+    </p>
+
+    <form id="rejectForm" method="POST">
+      <input type="hidden" name="status" value="rejected">
+
+      <div class="form-group" style="margin-bottom: 1.25rem;">
+        <label for="rejectionReason" class="form-label">Reason for Rejection *</label>
+        <textarea 
+          id="rejectionReason" 
+          name="rejectionReason" 
+          class="form-control" 
+          placeholder="e.g. Venue booked for university convocation rehearsal; please select alternate slot."
+          rows="3" 
+          required
+        ></textarea>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+        <button type="button" class="btn btn-secondary" onclick="document.getElementById('rejectModal').style.display='none'">
+          Cancel
+        </button>
+        <button type="submit" class="btn btn-danger">
+          Confirm Rejection
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

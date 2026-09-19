@@ -1,0 +1,104 @@
+<%- include('partials/header') %>
+
+<div class="container" style="padding-top: 3rem; padding-bottom: 3rem;">
+  <div style="max-width: 860px; margin: 0 auto;">
+    <div style="margin-bottom: 2rem;">
+      <span class="badge badge-category">Architecture & Documentation</span>
+      <h1 style="margin-top: 0.5rem; margin-bottom: 1rem;">Assignment Architecture Guide</h1>
+      <p style="font-size: 1.05rem;">
+        This project is structured using the standard <strong>Model-View-Controller (MVC)</strong> pattern in Node.js & Express.js.
+      </p>
+    </div>
+
+    <!-- Architecture Card -->
+    <div class="card" style="margin-bottom: 2rem;">
+      <h3 style="margin-bottom: 1rem; color: #a5b4fc;">📁 Project Directory Map</h3>
+      <pre style="background: rgba(0, 0, 0, 0.4); padding: 1.25rem; border-radius: var(--radius-sm); overflow-x: auto; color: #38bdf8; font-family: monospace; font-size: 0.85rem; line-height: 1.6;">
+Web_ass_2/
+├── config/
+│   └── db.js                 # Mongoose connection & error listeners
+├── controllers/
+│   ├── homeController.js     # Home dashboard & status controllers
+│   └── itemController.js     # CRUD handler functions
+├── models/
+│   └── Item.js               # Mongoose schema & validation
+├── routes/
+│   ├── indexRoutes.js        # Root & general routes
+│   └── itemRoutes.js         # RESTful resource endpoints
+├── views/
+│   ├── partials/             # Reusable EJS components (header, footer, alerts)
+│   ├── index.ejs             # Main dashboard view
+│   ├── about.ejs             # Documentation view
+│   └── 404.ejs               # Error view
+├── public/
+│   ├── css/style.css         # Modern dark glassmorphic stylesheet
+│   └── js/main.js            # Client-side interactions & modals
+├── .env                      # Environment variables
+├── server.js                 # Express server entry point
+└── package.json              # Project dependencies & scripts
+      </pre>
+    </div>
+
+    <!-- REST API Endpoints -->
+    <div class="card" style="margin-bottom: 2rem;">
+      <h3 style="margin-bottom: 1rem; color: #34d399;">🌐 Built-in REST Endpoints</h3>
+      <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem; text-align: left;">
+        <thead>
+          <tr style="border-bottom: 1px solid var(--border-subtle); color: var(--text-dim);">
+            <th style="padding: 0.75rem 0.5rem;">Method</th>
+            <th style="padding: 0.75rem 0.5rem;">Endpoint</th>
+            <th style="padding: 0.75rem 0.5rem;">Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.04);">
+            <td style="padding: 0.75rem 0.5rem;"><span class="badge" style="background: rgba(16, 185, 129, 0.2); color: #34d399;">GET</span></td>
+            <td style="padding: 0.75rem 0.5rem;"><code>/</code></td>
+            <td style="padding: 0.75rem 0.5rem; color: var(--text-muted);">Render Home Dashboard</td>
+          </tr>
+          <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.04);">
+            <td style="padding: 0.75rem 0.5rem;"><span class="badge" style="background: rgba(16, 185, 129, 0.2); color: #34d399;">GET</span></td>
+            <td style="padding: 0.75rem 0.5rem;"><code>/api/health</code></td>
+            <td style="padding: 0.75rem 0.5rem; color: var(--text-muted);">Database & server health check JSON</td>
+          </tr>
+          <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.04);">
+            <td style="padding: 0.75rem 0.5rem;"><span class="badge" style="background: rgba(59, 130, 246, 0.2); color: #60a5fa;">POST</span></td>
+            <td style="padding: 0.75rem 0.5rem;"><code>/items</code></td>
+            <td style="padding: 0.75rem 0.5rem; color: var(--text-muted);">Create a new item</td>
+          </tr>
+          <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.04);">
+            <td style="padding: 0.75rem 0.5rem;"><span class="badge" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24;">PUT</span></td>
+            <td style="padding: 0.75rem 0.5rem;"><code>/items/:id</code></td>
+            <td style="padding: 0.75rem 0.5rem; color: var(--text-muted);">Update existing item (via method-override)</td>
+          </tr>
+          <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.04);">
+            <td style="padding: 0.75rem 0.5rem;"><span class="badge" style="background: rgba(244, 63, 94, 0.2); color: #fb7185;">DELETE</span></td>
+            <td style="padding: 0.75rem 0.5rem;"><code>/items/:id</code></td>
+            <td style="padding: 0.75rem 0.5rem; color: var(--text-muted);">Delete item (via method-override)</td>
+          </tr>
+          <tr>
+            <td style="padding: 0.75rem 0.5rem;"><span class="badge" style="background: rgba(139, 92, 246, 0.2); color: #c084fc;">POST</span></td>
+            <td style="padding: 0.75rem 0.5rem;"><code>/items/:id/toggle</code></td>
+            <td style="padding: 0.75rem 0.5rem; color: var(--text-muted);">Cycle item progress status</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- How to Customize -->
+    <div class="card">
+      <h3 style="margin-bottom: 1rem; color: #fbbf24;">💡 How to Customize for Assignment Requirements</h3>
+      <ol style="padding-left: 1.25rem; color: var(--text-muted); line-height: 1.8;">
+        <li><strong>Add New Models:</strong> Create a new schema in <code>models/YourModel.js</code>.</li>
+        <li><strong>Add Controllers:</strong> Implement business logic in <code>controllers/yourController.js</code>.</li>
+        <li><strong>Connect Routes:</strong> Map routes in <code>routes/yourRoutes.js</code> and mount them in <code>server.js</code>.</li>
+        <li><strong>Add Views:</strong> Create templates in <code>views/</code> utilizing <code>partials/header.ejs</code> and <code>partials/footer.ejs</code>.</li>
+      </ol>
+      <div style="margin-top: 1.5rem;">
+        <a href="/" class="btn btn-primary">← Return to Dashboard</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

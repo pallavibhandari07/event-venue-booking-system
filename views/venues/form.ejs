@@ -1,0 +1,138 @@
+<%- include('../partials/header') %>
+
+<div class="container" style="max-width: 800px;">
+  <!-- Alerts -->
+  <%- include('../partials/alerts') %>
+
+  <div style="margin-bottom: 2rem;">
+    <a href="/venues" class="btn btn-secondary btn-sm" style="margin-bottom: 0.75rem;">
+      ← Back to Venues
+    </a>
+    <h1><%= venue ? `Edit ${venue.name}` : 'Create New Venue' %></h1>
+    <p>Configure venue specifications, seating capacity, facilities, and hourly rental rates.</p>
+  </div>
+
+  <div class="card">
+    <form action="<%= actionUrl %>" method="POST">
+      <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; margin-bottom: 1.25rem;">
+        <div>
+          <label for="name" class="form-label">Venue Name *</label>
+          <input 
+            type="text" 
+            id="name" 
+            name="name" 
+            class="input-control" 
+            placeholder="e.g. Science Complex Lecture Hall 1" 
+            value="<%= venue ? venue.name : '' %>" 
+            required 
+            autofocus
+          >
+        </div>
+
+        <div>
+          <label for="status" class="form-label">Initial Status</label>
+          <select id="status" name="status" class="select-control">
+            <option value="available" <%= venue && venue.status === 'available' ? 'selected' : '' %>>Available</option>
+            <option value="maintenance" <%= venue && venue.status === 'maintenance' ? 'selected' : '' %>>Under Maintenance</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 1.25rem;">
+        <label for="location" class="form-label">Location / Building & Floor *</label>
+        <input 
+          type="text" 
+          id="location" 
+          name="location" 
+          class="input-control" 
+          placeholder="e.g. West Campus - Engineering Block 3, Room 102" 
+          value="<%= venue ? venue.location : '' %>" 
+          required
+        >
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.25rem;">
+        <div>
+          <label for="capacity" class="form-label">Maximum Seating Capacity *</label>
+          <input 
+            type="number" 
+            id="capacity" 
+            name="capacity" 
+            class="input-control" 
+            placeholder="e.g. 150" 
+            min="1" 
+            value="<%= venue ? venue.capacity : '' %>" 
+            required
+          >
+        </div>
+
+        <div>
+          <label for="hourlyRate" class="form-label">Hourly Rental Rate (₹ INR) *</label>
+          <input 
+            type="number" 
+            id="hourlyRate" 
+            name="hourlyRate" 
+            class="input-control" 
+            placeholder="e.g. 1500" 
+            min="0" 
+            step="1" 
+            value="<%= venue ? venue.hourlyRate : '' %>" 
+            required
+          >
+        </div>
+      </div>
+
+      <div style="margin-bottom: 1.25rem;">
+        <label for="description" class="form-label">Detailed Description</label>
+        <textarea 
+          id="description" 
+          name="description" 
+          class="input-control" 
+          placeholder="Highlight acoustic treatment, lighting setup, ideal event types, and seating arrangements..." 
+          rows="3"
+        ><%= venue ? venue.description : '' %></textarea>
+      </div>
+
+      <div style="margin-bottom: 1.5rem;">
+        <label for="imageUrl" class="form-label">Cover Image URL</label>
+        <input 
+          type="url" 
+          id="imageUrl" 
+          name="imageUrl" 
+          class="input-control" 
+          placeholder="https://images.unsplash.com/..." 
+          value="<%= venue ? venue.imageUrl : '' %>"
+        >
+      </div>
+
+      <!-- Facilities Checkboxes -->
+      <div style="margin-bottom: 2rem;">
+        <label class="form-label" style="margin-bottom: 0.75rem;">Equipped Facilities & Amenities</label>
+        <div class="facility-checkbox-grid" style="border-top: none; padding-top: 0;">
+          <% allFacilities.forEach(fac => { %>
+            <label class="checkbox-label">
+              <input 
+                type="checkbox" 
+                name="facilities" 
+                value="<%= fac %>"
+                <%= venue && venue.facilities && venue.facilities.includes(fac) ? 'checked' : '' %>
+              >
+              <span><%= fac %></span>
+            </label>
+          <% }); %>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+        <a href="/venues" class="btn btn-secondary">
+          Cancel
+        </a>
+        <button type="submit" class="btn btn-primary">
+          <%= venue ? 'Save Venue Changes' : 'Create Venue' %>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

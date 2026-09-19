@@ -1,0 +1,167 @@
+<%- include('../partials/header') %>
+
+<div class="container">
+  <!-- Alerts -->
+  <%- include('../partials/alerts') %>
+
+  <!-- Catalog Header -->
+  <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem;">
+    <div>
+      <h1>Campus Venues & Facilities</h1>
+      <p>Filter spaces by seating capacity, available equipment, and hourly rate.</p>
+    </div>
+
+    <% if (currentUser && currentUser.role === 'admin') { %>
+      <a href="/venues/new" class="btn btn-primary">
+        + Create New Venue
+      </a>
+    <% } %>
+  </div>
+
+  <!-- Search & Filter Card -->
+  <div class="filter-card">
+    <form action="/venues" method="GET">
+      <div class="filter-grid">
+        <div>
+          <label style="display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.35rem;">
+            Search Keyword
+          </label>
+          <input 
+            type="text" 
+            name="search" 
+            class="input-control" 
+            placeholder="Search venue name, location, or equipment..." 
+            value="<%= query.search %>"
+          >
+        </div>
+
+        <div>
+          <label style="display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.35rem;">
+            Minimum Capacity
+          </label>
+          <input 
+            type="number" 
+            name="minCapacity" 
+            class="input-control" 
+            placeholder="e.g. 50" 
+            min="1" 
+            value="<%= query.minCapacity %>"
+          >
+        </div>
+
+        <div>
+          <label style="display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.35rem;">
+            Venue Status
+          </label>
+          <select name="status" class="select-control">
+            <option value="all" <%= query.status === 'all' ? 'selected' : '' %>>All Statuses</option>
+            <option value="available" <%= query.status === 'available' ? 'selected' : '' %>>Available</option>
+            <option value="maintenance" <%= query.status === 'maintenance' ? 'selected' : '' %>>Under Maintenance</option>
+          </select>
+        </div>
+
+        <div style="display: flex; gap: 0.5rem;">
+          <button type="submit" class="btn btn-primary" style="padding: 0.65rem 1.25rem;">
+            Filter
+          </button>
+          <a href="/venues" class="btn btn-secondary" style="padding: 0.65rem 1rem;">
+            Reset
+          </a>
+        </div>
+      </div>
+
+      <!-- Facilities Multi-select Checkboxes -->
+      <div class="facility-checkbox-grid">
+        <% allFacilities.forEach(fac => { %>
+          <label class="checkbox-label">
+            <input 
+              type="checkbox" 
+              name="facilities" 
+              value="<%= fac %>"
+              <%= query.facilities.includes(fac) ? 'checked' : '' %>
+            >
+            <span><%= fac %></span>
+          </label>
+        <% }); %>
+      </div>
+    </form>
+  </div>
+
+  <!-- Results Count -->
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+    <span style="font-size: 0.9rem; color: var(--text-dim);">
+      Showing <strong><%= venues.length %></strong> matching venue<%= venues.length === 1 ? '' : 's' %>
+    </span>
+  </div>
+
+  <!-- Venue Cards Grid -->
+  <% if (venues && venues.length > 0) { %>
+    <div class="venue-card-grid">
+      <% venues.forEach(venue => { %>
+        <div class="card venue-card">
+          <img 
+            src="<%= venue.imageUrl %>" 
+            alt="<%= venue.name %>" 
+            class="venue-image"
+            onerror="this.src='https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=800&q=80'"
+          >
+          <div class="venue-body">
+            <div>
+              <div class="venue-meta-pills">
+                <span class="badge badge-status-<%= venue.status %>"><%= venue.status %></span>
+                <span class="facility-tag" style="background: rgba(99, 102, 241, 0.15); color: #a5b4fc;">
+                  👥 <%= venue.capacity %> Seats
+                </span>
+                <% if (venue.maintenanceBlocks && venue.maintenanceBlocks.length > 0) { %>
+                  <span class="facility-tag" style="background: rgba(244, 63, 94, 0.15); color: #fb7185;">
+                    🔧 <%= venue.maintenanceBlocks.length %> Blocked Date(s)
+                  </span>
+                <% } %>
+              </div>
+
+              <h3 class="venue-title"><%= venue.name %></h3>
+              <div class="venue-location">📍 <%= venue.location %></div>
+              <p class="venue-desc"><%= venue.description %></p>
+
+              <!-- Facility Tags -->
+              <div class="venue-facilities-row">
+                <% venue.facilities.slice(0, 4).forEach(fac => { %>
+                  <span class="facility-tag">✓ <%= fac %></span>
+                <% }); %>
+                <% if (venue.facilities.length > 4) { %>
+                  <span class="facility-tag" style="opacity: 0.7;">+<%= venue.facilities.length - 4 %> more</span>
+                <% } %>
+              </div>
+            </div>
+
+            <div class="venue-footer">
+              <div class="venue-rate">
+                ₹<%= venue.hourlyRate.toLocaleString('en-IN') %> <span>/ hr</span>
+              </div>
+
+              <div style="display: flex; gap: 0.5rem; align-items: center;">
+                <% if (currentUser && currentUser.role === 'admin') { %>
+                  <a href="/venues/<%= venue._id %>/edit" class="btn btn-secondary btn-sm" title="Edit Venue">
+                    ✏️
+                  </a>
+                <% } %>
+                <a href="/venues/<%= venue._id %>" class="btn btn-primary btn-sm">
+                  View & Book →
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+  <% } else { %>
+    <div class="card" style="text-align: center; padding: 4rem 1.5rem;">
+      <div style="font-size: 3rem; margin-bottom: 0.75rem;">🔍</div>
+      <h3 style="color: #fff; margin-bottom: 0.5rem;">No Venues Match Your Criteria</h3>
+      <p style="margin-bottom: 1.5rem;">Try lowering the minimum capacity or selecting fewer facility filters.</p>
+      <a href="/venues" class="btn btn-primary">Clear All Filters</a>
+    </div>
+  <% } %>
+</div>
+
+<%- include('../partials/footer') %>

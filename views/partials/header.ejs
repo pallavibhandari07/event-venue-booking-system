@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Campus & Community Event & Venue Booking Management System">
+  <title><%= typeof title !== 'undefined' ? title : 'Event & Venue Booking System' %></title>
+  
+  <!-- Modern Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Custom Design System -->
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <!-- Header & Navigation -->
+  <header class="site-header">
+    <div class="container nav-content">
+      <a href="/" class="brand-logo" id="navBrandLogo">
+        <span>🏛️ CampusVenue</span>
+        <span class="brand-badge">Booking System</span>
+      </a>
+
+      <% if (currentUser) { %>
+        <ul class="nav-links">
+          <li>
+            <a href="/dashboard" class="nav-link <%= typeof activePage !== 'undefined' && activePage === 'dashboard' ? 'active' : '' %>">
+              Dashboard
+            </a>
+          </li>
+          <li>
+            <a href="/venues" class="nav-link <%= typeof activePage !== 'undefined' && activePage === 'venues' ? 'active' : '' %>">
+              Venues Directory
+            </a>
+          </li>
+
+          <% if (currentUser.role === 'organizer') { %>
+            <li>
+              <a href="/bookings/my-bookings" class="nav-link <%= typeof activePage !== 'undefined' && activePage === 'my-bookings' ? 'active' : '' %>">
+                My Bookings
+              </a>
+            </li>
+          <% } %>
+
+          <% if (currentUser.role === 'admin') { %>
+            <li>
+              <a href="/admin/bookings" class="nav-link <%= typeof activePage !== 'undefined' && activePage === 'admin-bookings' ? 'active' : '' %>">
+                Manage Requests
+              </a>
+            </li>
+            <li>
+              <a href="/venues/new" class="nav-link <%= typeof activePage !== 'undefined' && activePage === 'venues' && currentPath === '/venues/new' ? 'active' : '' %>">
+                + Add Venue
+              </a>
+            </li>
+          <% } %>
+        </ul>
+
+        <div class="nav-actions">
+          <div class="user-badge-pill">
+            <span>👤 <%= currentUser.name.split(' ')[0] %></span>
+            <span class="role-tag <%= currentUser.role %>"><%= currentUser.role %></span>
+          </div>
+
+          <form action="/logout" method="POST" style="margin: 0;">
+            <button type="submit" class="btn btn-secondary btn-sm" title="Log out of account">
+              Sign Out
+            </button>
+          </form>
+        </div>
+      <% } else { %>
+        <div class="nav-actions">
+          <a href="/login" class="btn btn-secondary btn-sm">Sign In</a>
+          <a href="/register" class="btn btn-primary btn-sm">Get Started</a>
+        </div>
+      <% } %>
+    </div>
+  </header>
+
+  <main class="main-content" style="padding-top: 1.75rem; padding-bottom: 3.5rem;">

@@ -1,0 +1,119 @@
+<%- include('../partials/header') %>
+
+<div class="container">
+  <!-- Alerts -->
+  <%- include('../partials/alerts') %>
+
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+    <div>
+      <h1>My Booking History</h1>
+      <p>Track your submitted venue requests, approvals, and upcoming campus sessions.</p>
+    </div>
+
+    <a href="/venues" class="btn btn-primary">
+      + New Booking Request
+    </a>
+  </div>
+
+  <!-- Status Filter Pills -->
+  <div style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+    <a href="/bookings/my-bookings?status=all" class="btn btn-sm <%= currentFilter === 'all' ? 'btn-primary' : 'btn-secondary' %>">
+      All Bookings (<%= bookings.length %>)
+    </a>
+    <a href="/bookings/my-bookings?status=pending" class="btn btn-sm <%= currentFilter === 'pending' ? 'btn-primary' : 'btn-secondary' %>">
+      ⏳ Pending
+    </a>
+    <a href="/bookings/my-bookings?status=approved" class="btn btn-sm <%= currentFilter === 'approved' ? 'btn-primary' : 'btn-secondary' %>">
+      ✓ Approved
+    </a>
+    <a href="/bookings/my-bookings?status=completed" class="btn btn-sm <%= currentFilter === 'completed' ? 'btn-primary' : 'btn-secondary' %>">
+      🏆 Completed
+    </a>
+    <a href="/bookings/my-bookings?status=rejected" class="btn btn-sm <%= currentFilter === 'rejected' ? 'btn-primary' : 'btn-secondary' %>">
+      ✕ Rejected
+    </a>
+    <a href="/bookings/my-bookings?status=cancelled" class="btn btn-sm <%= currentFilter === 'cancelled' ? 'btn-primary' : 'btn-secondary' %>">
+      🚫 Cancelled
+    </a>
+  </div>
+
+  <!-- Bookings Table -->
+  <div class="card">
+    <% if (bookings && bookings.length > 0) { %>
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Event Title</th>
+              <th>Venue</th>
+              <th>Schedule</th>
+              <th>Attendees</th>
+              <th>Total Cost</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% bookings.forEach(b => { %>
+              <tr>
+                <td>
+                  <div style="font-weight: 600; color: #fff;"><%= b.eventName %></div>
+                  <div style="font-size: 0.8rem; color: var(--text-dim);"><%= b.eventDescription ? b.eventDescription.substring(0, 50) + '...' : 'No notes' %></div>
+                </td>
+                <td>
+                  <% if (b.venue) { %>
+                    <a href="/venues/<%= b.venue._id %>" style="color: #38bdf8; font-weight: 500;">
+                      🏛️ <%= b.venue.name %>
+                    </a>
+                    <div style="font-size: 0.75rem; color: var(--text-dim);"><%= b.venue.location %></div>
+                  <% } else { %>
+                    <span style="color: var(--text-dim);">Venue Removed</span>
+                  <% } %>
+                </td>
+                <td>
+                  <div>📅 <%= b.date %></div>
+                  <div style="font-size: 0.8rem; color: var(--accent-cyan);">⏱️ <%= b.startTime %> - <%= b.endTime %> (<%= b.durationHours %> hrs)</div>
+                </td>
+                <td><%= b.expectedAttendees %></td>
+                <td style="color: #34d399; font-weight: 600;">₹<%= b.totalCost.toLocaleString('en-IN') %></td>
+                <td>
+                  <span class="badge badge-status-<%= b.status %>"><%= b.status %></span>
+                  <% if (b.status === 'rejected' && b.rejectionReason) { %>
+                    <div style="font-size: 0.75rem; color: #fb7185; margin-top: 0.25rem;">
+                      Reason: <%= b.rejectionReason %>
+                    </div>
+                  <% } %>
+                  <% if (b.adminNotes) { %>
+                    <div style="font-size: 0.75rem; color: #a5b4fc; margin-top: 0.25rem;">
+                      Note: <%= b.adminNotes %>
+                    </div>
+                  <% } %>
+                </td>
+                <td>
+                  <% if (b.status === 'pending' || b.status === 'approved') { %>
+                    <form action="/bookings/<%= b._id %>/cancel" method="POST" onsubmit="return confirm('Cancel this booking request?');" style="margin: 0;">
+                      <button type="submit" class="btn btn-danger btn-sm" style="font-size: 0.75rem; padding: 0.25rem 0.6rem;">
+                        Cancel
+                      </button>
+                    </form>
+                  <% } else { %>
+                    <span style="color: var(--text-dim); font-size: 0.8rem;">—</span>
+                  <% } %>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    <% } else { %>
+      <div style="text-align: center; padding: 3rem 1rem; color: var(--text-dim);">
+        <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">📂</div>
+        <h3 style="color: #fff; margin-bottom: 0.35rem;">No Bookings Found</h3>
+        <p style="margin-bottom: 1.5rem;">No booking requests found under the selected status filter.</p>
+        <a href="/venues" class="btn btn-primary">Find a Venue to Book</a>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

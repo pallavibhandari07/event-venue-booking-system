@@ -1,0 +1,178 @@
+<%- include('../partials/header') %>
+
+<div class="container">
+  <!-- Alerts -->
+  <%- include('../partials/alerts') %>
+
+  <!-- Organiser Header -->
+  <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem;">
+    <div>
+      <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.35rem;">
+        <span class="role-tag organizer">Event Organiser</span>
+        <span style="color: var(--text-dim); font-size: 0.85rem;"><%= currentUser.organization %></span>
+      </div>
+      <h1>Organiser Event Portal</h1>
+      <p>Explore campus venues, schedule time slots, and monitor booking status.</p>
+    </div>
+
+    <a href="/venues" class="btn btn-primary">
+      🔍 Explore & Book Venues
+    </a>
+  </div>
+
+  <!-- Organiser Stats Grid -->
+  <section class="stats-grid">
+    <div class="card">
+      <div class="stat-header">
+        <span class="stat-label">Total Events</span>
+        <div class="stat-icon">📑</div>
+      </div>
+      <div class="stat-value"><%= myStats.total %></div>
+      <div class="stat-subtitle">All-time booking requests</div>
+    </div>
+
+    <div class="card">
+      <div class="stat-header">
+        <span class="stat-label">Confirmed / Approved</span>
+        <div class="stat-icon">✓</div>
+      </div>
+      <div class="stat-value" style="color: #34d399;"><%= myStats.approved %></div>
+      <div class="stat-subtitle">Ready to host on campus</div>
+    </div>
+
+    <div class="card">
+      <div class="stat-header">
+        <span class="stat-label">Awaiting Approval</span>
+        <div class="stat-icon">⏳</div>
+      </div>
+      <div class="stat-value" style="color: #fbbf24;"><%= myStats.pending %></div>
+      <div class="stat-subtitle">Under facility admin review</div>
+    </div>
+
+    <div class="card">
+      <div class="stat-header">
+        <span class="stat-label">Completed</span>
+        <div class="stat-icon">🏆</div>
+      </div>
+      <div class="stat-value" style="color: #a5b4fc;"><%= myStats.completed %></div>
+      <div class="stat-subtitle">Successfully concluded events</div>
+    </div>
+  </section>
+
+  <!-- My Upcoming Bookings -->
+  <section class="card" style="margin-bottom: 2.5rem;">
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
+      <div>
+        <h3>📅 My Upcoming Bookings</h3>
+        <p>Your upcoming confirmed and pending events</p>
+      </div>
+      <a href="/bookings/my-bookings" class="btn btn-secondary btn-sm">View Full History</a>
+    </div>
+
+    <% if (myUpcoming && myUpcoming.length > 0) { %>
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Event Title</th>
+              <th>Venue</th>
+              <th>Date & Time</th>
+              <th>Attendees</th>
+              <th>Total Cost</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% myUpcoming.forEach(booking => { %>
+              <tr>
+                <td>
+                  <div style="font-weight: 600; color: #fff;"><%= booking.eventName %></div>
+                  <div style="font-size: 0.8rem; color: var(--text-dim);"><%= booking.eventDescription ? booking.eventDescription.substring(0, 45) + '...' : '' %></div>
+                </td>
+                <td>
+                  <a href="/venues/<%= booking.venue ? booking.venue._id : '' %>" style="color: #38bdf8;">
+                    🏛️ <%= booking.venue ? booking.venue.name : 'Unknown Venue' %>
+                  </a>
+                </td>
+                <td>
+                  <div>📅 <%= booking.date %></div>
+                  <div style="font-size: 0.8rem; color: var(--text-dim);">⏱️ <%= booking.startTime %> - <%= booking.endTime %></div>
+                </td>
+                <td><%= booking.expectedAttendees %></td>
+                <td style="color: #34d399; font-weight: 600;">₹<%= booking.totalCost.toLocaleString('en-IN') %></td>
+                <td>
+                  <span class="badge badge-status-<%= booking.status %>"><%= booking.status %></span>
+                  <% if (booking.status === 'rejected' && booking.rejectionReason) { %>
+                    <div style="font-size: 0.75rem; color: #fb7185; margin-top: 0.25rem;">
+                      Reason: <%= booking.rejectionReason %>
+                    </div>
+                  <% } %>
+                </td>
+                <td>
+                  <% if (booking.status === 'pending' || booking.status === 'approved') { %>
+                    <form action="/bookings/<%= booking._id %>/cancel" method="POST" onsubmit="return confirm('Are you sure you want to cancel this booking?');" style="margin: 0;">
+                      <button type="submit" class="btn btn-danger btn-sm" style="font-size: 0.75rem; padding: 0.25rem 0.6rem;">
+                        Cancel
+                      </button>
+                    </form>
+                  <% } else { %>
+                    <span style="color: var(--text-dim); font-size: 0.8rem;">None</span>
+                  <% } %>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    <% } else { %>
+      <div style="text-align: center; padding: 3rem 1rem; color: var(--text-dim);">
+        <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🎪</div>
+        <h4 style="color: #fff; margin-bottom: 0.35rem;">No Upcoming Bookings</h4>
+        <p style="margin-bottom: 1.5rem;">You don't have any scheduled events yet. Explore campus venues to request a date.</p>
+        <a href="/venues" class="btn btn-primary">Find a Venue</a>
+      </div>
+    <% } %>
+  </section>
+
+  <!-- Featured Campus Venues Quick Selection -->
+  <section>
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
+      <div>
+        <h3>🏛️ Featured Campus Spaces</h3>
+        <p>Browse premier halls and request your next booking slot</p>
+      </div>
+      <a href="/venues" class="btn btn-secondary btn-sm">All Venues</a>
+    </div>
+
+    <div class="venue-card-grid">
+      <% featuredVenues.forEach(v => { %>
+        <div class="card venue-card">
+          <img src="<%= v.imageUrl %>" alt="<%= v.name %>" class="venue-image" onerror="this.src='https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=800&q=80'">
+          <div class="venue-body">
+            <div>
+              <div class="venue-meta-pills">
+                <span class="badge badge-status-<%= v.status %>"><%= v.status %></span>
+                <span class="facility-tag">👥 <%= v.capacity %> Capacity</span>
+              </div>
+              <h3 class="venue-title"><%= v.name %></h3>
+              <div class="venue-location">📍 <%= v.location %></div>
+              <p class="venue-desc"><%= v.description %></p>
+            </div>
+
+            <div class="venue-footer">
+              <div class="venue-rate">
+                ₹<%= v.hourlyRate.toLocaleString('en-IN') %> <span>/ hour</span>
+              </div>
+              <a href="/venues/<%= v._id %>" class="btn btn-primary btn-sm">
+                Book Slot →
+              </a>
+            </div>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+  </section>
+</div>
+
+<%- include('../partials/footer') %>
