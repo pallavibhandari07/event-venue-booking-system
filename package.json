@@ -1,7 +1,7 @@
 {
-  "name": "web-ass-2",
+  "name": "event-venue-booking-system",
   "version": "1.0.0",
-  "description": "Full-stack boilerplate with Node.js, Express.js, MongoDB, and EJS",
+  "description": "Full-stack event and venue booking management web application built with Node.js, Express.js, MongoDB, and EJS",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

@@ -1,5 +1,15 @@
 # Event & Venue Booking Management System
 
+<p align="left">
+  <img src="https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=node.js&logoColor=white" alt="Node.js" />
+  <img src="https://img.shields.io/badge/Express.js-000000?style=flat-square&logo=express&logoColor=white" alt="Express.js" />
+  <img src="https://img.shields.io/badge/MongoDB-47A248?style=flat-square&logo=mongodb&logoColor=white" alt="MongoDB" />
+  <img src="https://img.shields.io/badge/Mongoose-880000?style=flat-square&logo=mongoose&logoColor=white" alt="Mongoose" />
+  <img src="https://img.shields.io/badge/EJS-B4CA65?style=flat-square&logo=ejs&logoColor=black" alt="EJS" />
+  <img src="https://img.shields.io/badge/Architecture-MVC%20Pattern-7C3AED?style=flat-square" alt="MVC Pattern" />
+  <img src="https://img.shields.io/badge/Auth-Session%20%26%20Bcrypt-02569B?style=flat-square" alt="Auth" />
+</p>
+
 A full-stack campus and community venue management web application built using **Node.js**, **Express.js**, **MongoDB (Mongoose)**, and **EJS templating**, styled with a custom dark glassmorphic design system.
 
 ---
